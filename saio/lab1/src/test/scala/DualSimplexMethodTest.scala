@@ -7,7 +7,7 @@ class DualSimplexMethodTest extends FunSuite {
 
   def assertHelper(actual: Either[String, DenseVector[Double]], expected: DenseVector[Double], diff: Double): Boolean = {
     actual match {
-      case Left(value) => println(value); false
+      case Left(value) => println(value); fail()
       case Right(value) => (abs(value - expected) <:< DenseVector.fill(expected.length){diff}).forall(b => b)
     }
   }
@@ -108,5 +108,21 @@ class DualSimplexMethodTest extends FunSuite {
     )
 
     assert(assertHelper(dsm.solve, DenseVector[Double](-1.0, 0.4074, 1, 4, -0.3704, 1.7407, 4, 4), 0.001))
+  }
+
+  test("DualSimplexMethod.solve9") {
+    val dsm: DualSimplexMethod = new DualSimplexMethod(
+      DenseMatrix(
+        (1.0, -5.0, 3.0, 1.0, 0.0, 0.0),
+        (4.0, -1.0, 1.0, 0.0, 1.0, 0.0),
+        (2.0, 4.0, 2.0, 0.0, 0.0, 1.0)
+      ),
+      DenseVector(-8.0, 22.0, 30.0),
+      DenseVector(7.0, -2.0, 6.0, 0.0, 5.0, 2.0),
+      DenseVector(6.0, 1.0, 0.0, 0.0, 1.0, 1.0),
+      DenseVector(6.0, 6.0, 5.0, 2.0, 4.0, 6.0)
+    )
+
+    assert(assertHelper(dsm.solve, DenseVector[Double](6.0, 3.0, 0.0, 1.0, 1.0, 6.0), 0.001))
   }
 }

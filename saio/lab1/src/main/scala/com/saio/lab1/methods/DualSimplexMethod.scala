@@ -56,7 +56,7 @@ class DualSimplexMethod(val A: DenseMatrix[Double],
     val Nb = B * (b - sum)
     (0 until Nb.size).foreach(i => N(Jb(i)) = Nb(i))
 
-    if ((dl(Jb) <:< Nb).forall(b => b) && (Nb <:< dh(Jb)).forall(b => b))
+    if ((dl(Jb) <:= Nb).forall(b => b) && (Nb <:= dh(Jb)).forall(b => b))
       return Right(N)
 
     val (k, jk) = getK(N, Jb)
@@ -121,13 +121,5 @@ class DualSimplexMethod(val A: DenseMatrix[Double],
       set
         .map(elem => selection(set - elem, count - 1).map(_ + elem))
         .reduce(_ ++ _)
-  }
-
-  def show = {
-    println("DualSimplexMethod")
-    println(A)
-    println(dl)
-    println(dh)
-    println()
   }
 }
