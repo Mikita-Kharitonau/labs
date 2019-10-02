@@ -122,4 +122,12 @@ class DualSimplexMethod(val A: DenseMatrix[Double],
         .map(elem => selection(set - elem, count - 1).map(_ + elem))
         .reduce(_ ++ _)
   }
+
+  def show = {
+    println("DualSimplexMethod")
+    println(A)
+    println(dl)
+    println(dh)
+    println()
+  }
 }
