@@ -16,18 +16,18 @@ class LinearCongruentGenerator(m: BigInt = BigInt("34359738368"),
   }
 }
 
+val random = new LinearCongruentGenerator
+
+val p = List(0.00032, 0.0064, 0.0512, 0.2048, 0.4096, 0.32768)
+var sum = 0.0
+val dfv = 0.0 :: p.map(pi => {sum += pi; sum})
+val res: List[Double] = (0 until 100000).map(i => dfv.count(_ <= random.next) - 1.0).toList
+
+
 val f = Figure()
 
 val h = f.subplot(0)
 
-val random = new LinearCongruentGenerator
-
-import scala.util.Random
-
-val random2 = new Random
-
-h += hist(DenseVector.fill(1000000){random.next}, 10)
-
-h.ylim(50000, 150000)
+h += hist(res, 10)
 
 f.refresh
