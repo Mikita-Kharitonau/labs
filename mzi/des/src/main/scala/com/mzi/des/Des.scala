@@ -27,15 +27,15 @@ class Des(key: Array[Int]) {
     33, 1, 41, 9, 49, 17, 57, 25
   )
 
-  val P: Array[Array[Int]] = Array(
-    Array(32, 1, 2, 3, 4, 5),
-    Array(4, 5, 6, 7, 8, 9),
-    Array(8, 9, 10, 11, 12, 13),
-    Array(12, 13, 14, 15, 16, 17),
-    Array(16, 17, 18, 19, 20, 21),
-    Array(20, 21, 22, 23, 24, 25),
-    Array(24, 25, 26, 27, 28, 29),
-    Array(28, 29, 30, 31, 32, 1)
+  val P: Array[Int] = Array(
+    32, 1, 2, 3, 4, 5,
+    4, 5, 6, 7, 8, 9,
+    8, 9, 10, 11, 12, 13,
+    12, 13, 14, 15, 16, 17,
+    16, 17, 18, 19, 20, 21,
+    20, 21, 22, 23, 24, 25,
+    24, 25, 26, 27, 28, 29,
+    28, 29, 30, 31, 32, 1
   )
 
   val S: Array[Array[Array[Int]]] = Array(
@@ -131,32 +131,13 @@ class Des(key: Array[Int]) {
 
   // Just to calculate C0 and D0
   prepareK(key)
-  def prepareK(k: Array[Int]) = {
-    val arrBuffer = new scala.collection.mutable.ArrayBuffer[Int]
-    (0 until 56).foreach(i => arrBuffer.addOne(k(i)))
-    (7 to 63 by 8).foreach(arrBuffer.insert(_, 0))
-    val CD = new Array[Int](56)
-    (0 until 56).foreach(i => {
-      CD(i) = arrBuffer(PK1(i) - 1)
-    })
-
-    C0 = CD.take(28)
-    D0 = CD.drop(28)
-  }
 
   def crypt(source: Array[Int], rounds: (Array[Int], Array[Int], Int) => Array[Int]): Array[Int] = {
-    val ip = new Array[Int](64)
-    (0 until 64).foreach(i => ip(i) = source(IP(i) - 1))
-
+    val ip = ext(source, IP)
     val L = ip.take(32)
     val R = ip.drop(32)
-
     val afterRounds = rounds(L, R, 0)
-
-    val ip1 = new Array[Int](64)
-    (0 until 64).foreach(i => ip1(i) = afterRounds(IP1(i) - 1))
-
-    ip1
+    ext(afterRounds, IP1)
   }
 
   def encrypt(plain: Array[Int]): Array[Int] = crypt(plain, roundsEncrypt)
@@ -177,51 +158,48 @@ class Des(key: Array[Int]) {
     roundsDecrypt(xor(R, f(L, ki)), L, i + 1)
   }
 
-
-  def pExt(R: Array[Int]) = {
-    val arr = new Array[Int](48)
-    (0 until 48).foreach(i => {
-      val index = P(i / 6)(i % 6)
-      arr(i) = R(index - 1)
-    })
-    arr
-  }
-
-  def xor(arr1: Array[Int], arr2: Array[Int]) = {
-    val res = new Array[Int](arr1.length)
-    (0 until arr1.length).foreach(i => res(i) = (arr1(i) + arr2(i)) % 2)
-    res
-  }
-
-
   def f(R: Array[Int], ki: Array[Int]) = {
-    val extended = pExt(R)
+    val extended = ext(R, P)
     val afterXor = xor(extended, ki.toArray)
-
     val b = (0 until 48 by 6).map(i => afterXor.slice(i, i + 6))
-
     val b_ = (0 until 8).flatMap(i => {
       val bi = b(i)
       val m = Integer.parseInt(bi(0).toString + bi(5), 2)
       val n = Integer.parseInt(bi(1).toString + bi(2) + bi(3) + bi(4), 2)
-
       val s = S(i)(m)(n)
-
       val bs = s.toBinaryString
       ("0" * (4 - bs.length) + bs).map(_.toByte - 48)
     }).toArray
 
-    val shuffledB_ = new Array[Int](32)
-    (0 until 32).foreach(i => shuffledB_(i) = b_(PI(i) - 1))
-
-    shuffledB_
+    ext(b_, PI)
   }
 
-  def getKi(i: Int) = {
+  // Common functions
+  def prepareK(k: Array[Int]) = {
+    val arrBuffer = new scala.collection.mutable.ArrayBuffer[Int]
+    (0 until 56).foreach(i => arrBuffer.addOne(k(i)))
+    (7 to 63 by 8).foreach(arrBuffer.insert(_, 0))
+    val CD = ext(arrBuffer.toArray, PK1)
+
+    C0 = CD.take(28)
+    D0 = CD.drop(28)
+  }
+
+  def ext(source: Array[Int], rule: Array[Int]): Array[Int] = {
+    val res = new Array[Int](rule.length)
+    rule.indices.foreach(i => res(i) = source(rule(i) - 1))
+    res
+  }
+
+  def xor(arr1: Array[Int], arr2: Array[Int]) = {
+    val res = new Array[Int](arr1.length)
+    arr1.indices.foreach(i => res(i) = (arr1(i) + arr2(i)) % 2)
+    res
+  }
+
+  def getKi(i: Int): Array[Int] = {
     val CD = shiftLeft(C0, SHIFTS.take(i + 1).sum) ++ shiftLeft(D0, SHIFTS.take(i + 1).sum)
-    val k = new Array[Int](48)
-    (0 until 48).foreach(i => k(i) = CD(PK2(i) - 1))
-    k
+    ext(CD, PK2)
   }
 
   def shiftLeft(arr: Array[Int], i: Int): Array[Int] = arr.drop(i) ++ arr.take(i)
