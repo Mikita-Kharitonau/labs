@@ -1,5 +1,6 @@
 import breeze.linalg._
 import breeze.plot._
+import scala.util.Random
 
 import scala.math.BigInt
 
@@ -18,16 +19,30 @@ class LinearCongruentGenerator(m: BigInt = BigInt("34359738368"),
 
 val random = new LinearCongruentGenerator
 
-val p = List(0.00032, 0.0064, 0.0512, 0.2048, 0.4096, 0.32768)
-var sum = 0.0
-val dfv = 0.0 :: p.map(pi => {sum += pi; sum})
-val res: List[Double] = (0 until 100000).map(i => dfv.count(_ <= random.next) - 1.0).toList
+import scala.math._
 
+val n = 1000
+val k = 200.0
+
+def nd(x: Double) = {
+  ((1 / pow(2 * Pi, 0.5)) * exp(-pow(x, 2)/2))
+}
+val p = (-n to n).map(i => nd(i / k)).toList
+var sum = 0.0
+val dfv = p.map(pi => {sum += (pi / k); sum})
+
+p.sum / k
+
+val (a, b) = (0.0, 200.0)
+
+val r = new Random()
+
+val res: List[Double] = (0 until 10000).map(i => dfv.count(_ <= r.nextFloat).toDouble * (b - a) / (2 * n) + a).toList
 
 val f = Figure()
 
 val h = f.subplot(0)
 
-h += hist(res, 10)
+h += hist(res, 1000)
 
 f.refresh
