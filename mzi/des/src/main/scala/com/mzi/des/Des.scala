@@ -2,41 +2,21 @@ package com.mzi.des
 
 import scala.annotation.tailrec
 
-
 class Des(key: Array[Int]) {
 
-  val IP: Array[Int] = Array(
-    58, 50, 42, 34, 26, 18, 10, 2,
-    60, 52, 44, 36, 28, 20, 12, 4,
-    62, 54, 46, 38, 30, 22, 14, 6,
-    64, 56, 48, 40, 32, 24, 16, 8,
-    57, 49, 41, 33, 25, 17, 9, 1,
-    59, 51, 43, 35, 27, 19, 11, 3,
-    61, 53, 45, 37, 29, 21, 13, 5,
-    63, 55, 47, 39, 31, 23, 15, 7
-  )
+  val IP: Array[Int] = Array(58, 50, 42, 34, 26, 18, 10, 2, 60, 52, 44, 36, 28,
+    20, 12, 4, 62, 54, 46, 38, 30, 22, 14, 6, 64, 56, 48, 40, 32, 24, 16, 8, 57,
+    49, 41, 33, 25, 17, 9, 1, 59, 51, 43, 35, 27, 19, 11, 3, 61, 53, 45, 37, 29,
+    21, 13, 5, 63, 55, 47, 39, 31, 23, 15, 7)
 
-  val IP1: Array[Int] = Array(
-    40, 8, 48, 16, 56, 24, 64, 32,
-    39, 7, 47, 15, 55, 23, 63, 31,
-    38, 6, 46, 14, 54, 22, 62, 30,
-    37, 5, 45, 13, 53, 21, 61, 29,
-    36, 4, 44, 12, 52, 20, 60, 28,
-    35, 3, 43, 11, 51, 19, 59, 27,
-    34, 2, 42, 10, 50, 18, 58, 26,
-    33, 1, 41, 9, 49, 17, 57, 25
-  )
+  val IP1: Array[Int] = Array(40, 8, 48, 16, 56, 24, 64, 32, 39, 7, 47, 15, 55,
+    23, 63, 31, 38, 6, 46, 14, 54, 22, 62, 30, 37, 5, 45, 13, 53, 21, 61, 29,
+    36, 4, 44, 12, 52, 20, 60, 28, 35, 3, 43, 11, 51, 19, 59, 27, 34, 2, 42, 10,
+    50, 18, 58, 26, 33, 1, 41, 9, 49, 17, 57, 25)
 
-  val P: Array[Int] = Array(
-    32, 1, 2, 3, 4, 5,
-    4, 5, 6, 7, 8, 9,
-    8, 9, 10, 11, 12, 13,
-    12, 13, 14, 15, 16, 17,
-    16, 17, 18, 19, 20, 21,
-    20, 21, 22, 23, 24, 25,
-    24, 25, 26, 27, 28, 29,
-    28, 29, 30, 31, 32, 1
-  )
+  val P: Array[Int] = Array(32, 1, 2, 3, 4, 5, 4, 5, 6, 7, 8, 9, 8, 9, 10, 11,
+    12, 13, 12, 13, 14, 15, 16, 17, 16, 17, 18, 19, 20, 21, 20, 21, 22, 23, 24,
+    25, 24, 25, 26, 27, 28, 29, 28, 29, 30, 31, 32, 1)
 
   val S: Array[Array[Array[Int]]] = Array(
     Array(
@@ -89,42 +69,19 @@ class Des(key: Array[Int]) {
     )
   )
 
-  val PI: Array[Int] = Array(
-    16, 7, 20, 21,
-    29, 12, 28, 17,
-    1, 15, 23, 26,
-    5, 18, 31, 10,
-    2, 8, 24, 14,
-    32, 27, 3, 9,
-    19, 13, 30, 6,
-    22, 11, 4, 25
-  )
+  val PI: Array[Int] = Array(16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5,
+    18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25)
 
-  val PK1: Array[Int] = Array(
-    57, 49, 41, 33, 25, 17, 9,
-    1, 58, 50, 42, 34, 26, 18,
-    10, 2, 59, 51, 43, 35, 27,
-    19, 11, 3, 60, 52, 44, 36,
-    63, 55, 47, 39, 31, 23, 15,
-    7, 62, 54, 46, 38, 30, 22,
-    14, 6, 61, 53, 45, 37, 29,
-    21, 13, 5, 28, 20, 12, 4
-  )
+  val PK1: Array[Int] = Array(57, 49, 41, 33, 25, 17, 9, 1, 58, 50, 42, 34, 26,
+    18, 10, 2, 59, 51, 43, 35, 27, 19, 11, 3, 60, 52, 44, 36, 63, 55, 47, 39,
+    31, 23, 15, 7, 62, 54, 46, 38, 30, 22, 14, 6, 61, 53, 45, 37, 29, 21, 13, 5,
+    28, 20, 12, 4)
 
-  val PK2: Array[Int] = Array(
-    14, 17, 11, 24, 1, 5,
-    3, 28, 15, 6, 21, 10,
-    23, 19, 12, 4, 26, 8,
-    16, 7, 27, 20, 13, 2,
-    41, 52, 31, 37, 47, 55,
-    30, 40, 51, 45, 33, 48,
-    44, 49, 39, 56, 34, 53,
-    46, 42, 50, 36, 29, 32
-  )
+  val PK2: Array[Int] = Array(14, 17, 11, 24, 1, 5, 3, 28, 15, 6, 21, 10, 23,
+    19, 12, 4, 26, 8, 16, 7, 27, 20, 13, 2, 41, 52, 31, 37, 47, 55, 30, 40, 51,
+    45, 33, 48, 44, 49, 39, 56, 34, 53, 46, 42, 50, 36, 29, 32)
 
-  val SHIFTS: Array[Int] = Array(
-    1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
-  )
+  val SHIFTS: Array[Int] = Array(1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1)
 
   var C0: Array[Int] = _
   var D0: Array[Int] = _
@@ -132,21 +89,24 @@ class Des(key: Array[Int]) {
   // Just to calculate C0 and D0
   prepareK(key)
 
-  def crypt(source: Array[Int], rounds: (Array[Int], Array[Int], Int) => Array[Int]): Array[Int] = {
+  def crypt(source: Array[Int],
+            rounds: (Array[Int], Array[Int], Int) => Array[Int],
+            dir: Int): Array[Int] = {
     val ip = ext(source, IP)
     val L = ip.take(32)
     val R = ip.drop(32)
-    val afterRounds = rounds(L, R, 0)
+    val afterRounds =
+      if (dir == 1) roundsEncrypt(L, R, 0) else roundsDecrypt(R, L, 0)
     ext(afterRounds, IP1)
   }
 
-  def encrypt(plain: Array[Int]): Array[Int] = crypt(plain, roundsEncrypt)
+  def encrypt(plain: Array[Int]): Array[Int] = crypt(plain, roundsEncrypt, 1)
 
-  def decrypt(encrypted: Array[Int]): Array[Int] = crypt(encrypted, roundsDecrypt)
+  def decrypt(cipher: Array[Int]): Array[Int] = crypt(cipher, roundsDecrypt, -1)
 
   @tailrec
   private def roundsEncrypt(L: Array[Int], R: Array[Int], i: Int): Array[Int] = {
-    if (i == 16) return L ++ R
+    if (i == 16) return R ++ L
     val ki = getKi(i)
     roundsEncrypt(R, xor(L, f(R, ki)), i + 1)
   }
@@ -162,14 +122,16 @@ class Des(key: Array[Int]) {
     val extended = ext(R, P)
     val afterXor = xor(extended, ki.toArray)
     val b = (0 until 48 by 6).map(i => afterXor.slice(i, i + 6))
-    val b_ = (0 until 8).flatMap(i => {
-      val bi = b(i)
-      val m = Integer.parseInt(bi(0).toString + bi(5), 2)
-      val n = Integer.parseInt(bi(1).toString + bi(2) + bi(3) + bi(4), 2)
-      val s = S(i)(m)(n)
-      val bs = s.toBinaryString
-      ("0" * (4 - bs.length) + bs).map(_.toByte - 48)
-    }).toArray
+    val b_ = (0 until 8)
+      .flatMap(i => {
+        val bi = b(i)
+        val m = Integer.parseInt(bi(0).toString + bi(5), 2)
+        val n = Integer.parseInt(bi(1).toString + bi(2) + bi(3) + bi(4), 2)
+        val s = S(i)(m)(n)
+        val bs = s.toBinaryString
+        ("0" * (4 - bs.length) + bs).map(_.toByte - 48)
+      })
+      .toArray
 
     ext(b_, PI)
   }
@@ -179,7 +141,7 @@ class Des(key: Array[Int]) {
     val arrBuffer = new scala.collection.mutable.ArrayBuffer[Int]
     (0 until 56).foreach(i => arrBuffer.addOne(k(i)))
     (7 to 63 by 8).foreach(arrBuffer.insert(_, 0))
-    val CD = ext(arrBuffer.toArray, PK1)
+    val CD = ext(k, PK1)
 
     C0 = CD.take(28)
     D0 = CD.drop(28)
