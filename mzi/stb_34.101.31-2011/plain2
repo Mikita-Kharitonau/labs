@@ -1,0 +1,19 @@
+package com.mzi.stb
+
+import Common._
+
+class SimpleSwapEncryption {
+
+  def crypt(X: Array[Int], O: Array[Int], f: (Array[Int], Array[Int]) => Array[Int]): Array[Int] = {
+    val slices = slicer(X, 128)
+    if(slices.forall(_.length == 128)) return slices.map(xi => f(xi, O)).flatten
+    val Xn_1 = slices.filter(_.length == 128).last
+    val Ynr = f(Xn_1, O)
+    val simplePart = slices.dropRight(2).map(xi => f(xi, O)).flatten
+    simplePart ++ f(slices.last ++ Ynr.drop(slices.last.length), O) ++ Ynr.take(slices.last.length)
+  }
+
+  def encrypt(X: Array[Int], O: Array[Int]): Array[Int] = crypt(X: Array[Int], O: Array[Int], F)
+
+  def decrypt(X: Array[Int], O: Array[Int]): Array[Int] = crypt(X: Array[Int], O: Array[Int], F_)
+}

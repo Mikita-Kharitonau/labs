@@ -23,7 +23,7 @@ object Main {
 
   def main(args: Array[String]): Unit = {
 
-    val byteArray = fromArrayOfBytesToListOfBits(Files.readAllBytes(Paths.get("/home/nikitakharitonov/plain")))
+    val byteArray = fromArrayOfBytesToListOfBits(Files.readAllBytes(Paths.get("./plain")))
 
     val O = ("1110100111011110111001110010110010001111000011000000111110100110001011011101101101001001111101000110111" +
       "10111001110010110010001110000011000000111010100110001011011101101001001000111101000110111001110011100101110100" +
@@ -44,22 +44,24 @@ object Main {
     fromArrayOfBitsToArrayOfBytes(encrypted).foreach(print(_))
     println()
 
-    val bos = new BufferedOutputStream(new FileOutputStream("/home/nikitakharitonov/cipher"))
+    val bos = new BufferedOutputStream(new FileOutputStream("./cipher"))
     Stream.continually(bos.write(fromArrayOfBitsToArrayOfBytes(encrypted)))
     bos.close()
 
-    val byteArray2 = Files.readAllBytes(Paths.get("/home/nikitakharitonov/cipher"))
+    val byteArray2 = Files.readAllBytes(Paths.get("./cipher"))
 
     byteArray2.foreach(print(_))
     println()
 
+    println("From file:")
     fromArrayOfBytesToListOfBits(byteArray2).foreach(print(_))
     println()
 
+    println("Decrypted:")
     val decrypted = sse.decrypt(fromArrayOfBytesToListOfBits(byteArray2), O)
     decrypted.foreach(print(_))
 
-    val bos1 = new BufferedOutputStream(new FileOutputStream("/home/nikitakharitonov/scrum3"))
+    val bos1 = new BufferedOutputStream(new FileOutputStream("./plain2"))
     Stream.continually(bos1.write(fromArrayOfBitsToArrayOfBytes(decrypted)))
     bos1.close()
   }
