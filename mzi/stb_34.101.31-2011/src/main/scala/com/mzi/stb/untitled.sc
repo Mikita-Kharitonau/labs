@@ -1,1 +1,1 @@
-(0 to 16 by 8).foreach(i => println(i))
+(8 to 1 by -1).foreach(print(_))
