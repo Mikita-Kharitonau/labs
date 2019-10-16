@@ -1,1 +1,4 @@
-(8 to 1 by -1).foreach(print(_))
+(128-(-39)).toBinaryString
+(-39 + 256).toBinaryString
+127.toBinaryString
+

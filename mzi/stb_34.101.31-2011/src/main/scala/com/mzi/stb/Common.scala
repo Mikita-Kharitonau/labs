@@ -24,7 +24,7 @@ object Common {
     Array(0xD4, 0xEF, 0xD9, 0xB4, 0x3A, 0x62, 0x28, 0x75, 0x91, 0x14, 0x10, 0xEA, 0x77, 0x6C, 0xDA, 0x1D)
   )
 
-  def encrypt(X: Array[Int], O: Array[Int]) = {
+  def F(X: Array[Int], O: Array[Int]) = {
     var a = X.slice(0, 32)
     var b = X.slice(32, 64)
     var c = X.slice(64, 96)
@@ -49,7 +49,7 @@ object Common {
     b ++ d ++ a ++ c
   }
 
-  def decrypt(X: Array[Int], O: Array[Int]) = {
+  def F_(X: Array[Int], O: Array[Int]) = {
     var a = X.slice(0, 32)
     var b = X.slice(32, 64)
     var c = X.slice(64, 96)
@@ -79,11 +79,7 @@ object Common {
   }
 
   def G(u: Array[Int], r: Int) = {
-    val hs = (0 until u.length / 8)
-      .map(i => {
-        H(u.slice(8 * i, 8 * (i + 1)))
-      }).toList.flatten.toArray
-
+    val hs = slicer(u, 8).map(H).toList.flatten.toArray
     nTimes(hs, r, RotHi)
   }
 
@@ -114,14 +110,7 @@ object Common {
 
   def corners(U: Long, dimension: Int): Array[Int] = {
     val num = fromIntToBits(U % pow(2, dimension).toLong, dimension)
-    (0 until num.length / 8)
-      .map(i => {
-        num.slice(8 * i, 8 * (i + 1))
-      })
-      .toList
-      .reverse
-      .flatten
-      .toArray
+    slicer(num, 8).toList.reverse.flatten.toArray
   }
 
   def cover(u: Array[Int]): Long = {
@@ -134,6 +123,10 @@ object Common {
   }
 
   // Utils
+  def slicer(arr: Array[Int], delta: Int): Array[Array[Int]] = {
+    (0 to arr.length / delta).map(i => arr.slice(delta * i, delta * (i + 1))).filter(_.length > 0).toArray
+  }
+
   @tailrec
   def nTimes(u: Array[Int], n: Int, f: Array[Int] => Array[Int]): Array[Int] = {
     if (n == 0) u

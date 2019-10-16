@@ -1,15 +1,66 @@
 package com.mzi.stb
 
+import java.io.{BufferedOutputStream, FileOutputStream}
+import java.nio.file.{Files, Paths}
+
+import Common._
+
 object Main {
 
+  def fromArrayOfBytesToListOfBits(arr: Array[Byte]): Array[Int] = {
+    arr.toList.flatMap(b => {
+      val bs = ((b + 256) % 256).toBinaryString
+      ("0" * (8 - bs.length) + bs).map(_.toByte - 48)
+    }).toArray
+  }
+
+  def fromArrayOfBitsToArrayOfBytes(arr: Array[Int]) = {
+    slicer(arr, 8).map(i => {
+      val bs = i.mkString("")
+      Integer.parseInt("0" * (8 - bs.length) + bs, 2).toByte
+    })
+  }
+
   def main(args: Array[String]): Unit = {
-    // 10110001100101001011101011001000000010100000100011110101001110110011011001101101000000001000111001011000010010100101110111100100
-    // 1110100111011110111001110010110010001111000011000000111110100110001011011101101101001001111101000110111101110011100101100100011100000110000001110101001100010110111011010010010001111010001101110011100111001011101000111000001100000011101010011000101111110110
-    val u = Array(1,1,0,0,1,0,0,0,1,0,1,1,1,0,1,0,1,0,0,1,0,1,0,0,1,0,1,1,0,0,0,1)
 
-    val plain = "10110001100101001011101011001000000010100000100011110101001110110011011001101101000000001000111001011000010010100101110111100100".toList.map(ch => ch.toInt - 48).toArray
-    val O = "1110100111011110111001110010110010001111000011000000111110100110001011011101101101001001111101000110111101110011100101100100011100000110000001110101001100010110111011010010010001111010001101110011100111001011101000111000001100000011101010011000101111110110".toList.map(ch => ch.toInt - 48).toArray
+    val byteArray = fromArrayOfBytesToListOfBits(Files.readAllBytes(Paths.get("/home/nikitakharitonov/plain")))
 
-    Common.encrypt(plain, O).foreach(print(_))
+    val O = ("1110100111011110111001110010110010001111000011000000111110100110001011011101101101001001111101000110111" +
+      "10111001110010110010001110000011000000111010100110001011011101101001001000111101000110111001110011100101110100" +
+      "0111000001100000011101010011000101111110110").toList.map(ch => ch.toInt - 48).toArray
+
+    val sse = new SimpleSwapEncryption()
+
+    //sse.decrypt(sse.encrypt(plain, O), O).foreach(print(_))
+    print("Plain: ")
+    byteArray.foreach(print(_))
+    println()
+
+    val encrypted = sse.encrypt(byteArray, O)
+    print("Encry: ")
+    encrypted.foreach(print(_))
+    println()
+
+    fromArrayOfBitsToArrayOfBytes(encrypted).foreach(print(_))
+    println()
+
+    val bos = new BufferedOutputStream(new FileOutputStream("/home/nikitakharitonov/cipher"))
+    Stream.continually(bos.write(fromArrayOfBitsToArrayOfBytes(encrypted)))
+    bos.close()
+
+    val byteArray2 = Files.readAllBytes(Paths.get("/home/nikitakharitonov/cipher"))
+
+    byteArray2.foreach(print(_))
+    println()
+
+    fromArrayOfBytesToListOfBits(byteArray2).foreach(print(_))
+    println()
+
+    val decrypted = sse.decrypt(fromArrayOfBytesToListOfBits(byteArray2), O)
+    decrypted.foreach(print(_))
+
+    val bos1 = new BufferedOutputStream(new FileOutputStream("/home/nikitakharitonov/scrum3"))
+    Stream.continually(bos1.write(fromArrayOfBitsToArrayOfBytes(decrypted)))
+    bos1.close()
   }
 }
