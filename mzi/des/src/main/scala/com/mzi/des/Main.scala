@@ -10,10 +10,13 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
-    val d = new Des(fromArrayOfBytesToListOfBits("aaaaaaaa".getBytes()))
-    d.decrypt(d.encrypt(
-      fromArrayOfBytesToListOfBits("aaaaaaaa".getBytes())
-    )).foreach(i => print(i))
+    val d = new Des(fromArrayOfBytesToListOfBits("12345678".getBytes()))
+    d.encrypt(
+      fromArrayOfBytesToListOfBits("BSUIR135".getBytes())
+    ).foreach(i => print(i))
+//    d.decrypt(d.encrypt(
+//      fromArrayOfBytesToListOfBits("aaaaaaaa".getBytes())
+//    )).foreach(i => print(i))
   }
 }
 
