@@ -21,8 +21,13 @@ object Main {
     })
   }
 
-  def main(args: Array[String]): Unit = {
+  def writeToFile(arr: Array[Int], filename: String) = {
+    val bos = new BufferedOutputStream(new FileOutputStream(filename))
+    Stream.continually(bos.write(fromArrayOfBitsToArrayOfBytes(arr)))
+    bos.close()
+  }
 
+  def main(args: Array[String]): Unit = {
     val byteArray = fromArrayOfBytesToListOfBits(Files.readAllBytes(Paths.get("./plain")))
 
     val O = ("1110100111011110111001110010110010001111000011000000111110100110001011011101101101001001111101000110111" +
@@ -30,39 +35,10 @@ object Main {
       "0111000001100000011101010011000101111110110").toList.map(ch => ch.toInt - 48).toArray
 
     val sse = new SimpleSwapEncryption()
-
-    //sse.decrypt(sse.encrypt(plain, O), O).foreach(print(_))
-    print("Plain: ")
-    byteArray.foreach(print(_))
-    println()
-
     val encrypted = sse.encrypt(byteArray, O)
-    print("Encry: ")
-    encrypted.foreach(print(_))
-    println()
-
-    fromArrayOfBitsToArrayOfBytes(encrypted).foreach(print(_))
-    println()
-
-    val bos = new BufferedOutputStream(new FileOutputStream("./cipher"))
-    Stream.continually(bos.write(fromArrayOfBitsToArrayOfBytes(encrypted)))
-    bos.close()
-
+    writeToFile(encrypted, "./cipher")
     val byteArray2 = Files.readAllBytes(Paths.get("./cipher"))
-
-    byteArray2.foreach(print(_))
-    println()
-
-    println("From file:")
-    fromArrayOfBytesToListOfBits(byteArray2).foreach(print(_))
-    println()
-
-    println("Decrypted:")
     val decrypted = sse.decrypt(fromArrayOfBytesToListOfBits(byteArray2), O)
-    decrypted.foreach(print(_))
-
-    val bos1 = new BufferedOutputStream(new FileOutputStream("./plain2"))
-    Stream.continually(bos1.write(fromArrayOfBitsToArrayOfBytes(decrypted)))
-    bos1.close()
+    writeToFile(decrypted, "./plain2")
   }
 }
